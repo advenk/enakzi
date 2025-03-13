@@ -1,0 +1,56 @@
+version: "3"
+services:
+  db:
+    image: postgres:latest
+    container_name: archillect_db
+    environment:
+      - POSTGRES_DB=archillect
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  crawler:
+    build: ./crawler
+    container_name: archillect_crawler
+    depends_on:
+      - db
+    volumes:
+      - ./images:/app/images
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=archillect
+      - DB_USER=postgres
+      - DB_PASS=password
+      - NIMA_MODEL_PATH=/app/nima_weights/model.pth
+    command: ["scrapy", "crawl", "general"]
+
+  api:
+    build: ./api
+    container_name: archillect_api
+    depends_on:
+      - db
+    volumes:
+      - ./images:/app/images
+    ports:
+      - "8000:8000"
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=archillect
+      - DB_USER=postgres
+      - DB_PASS=password
+
+  web:
+    build: ./web
+    container_name: archillect_web
+    depends_on:
+      - api
+    ports:
+      - "3000:80"
+
+volumes:
+  db_data: 
