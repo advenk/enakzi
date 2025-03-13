@@ -7,7 +7,7 @@ ROBOTSTXT_OBEY = False
 DOWNLOAD_DELAY = 1.0
 
 # Limit how deep we go from the seed URLs
-DEPTH_LIMIT = 5
+DEPTH_LIMIT = 10
 
 # Default item pipeline
 ITEM_PIPELINES = {

@@ -16,6 +16,12 @@ class GeneralSpider(CrawlSpider):
         "https://www.reddit.com/r/Art/top/?t=month",
         "https://www.reddit.com/r/DigitalArt/top/?t=month",
         "https://www.reddit.com/r/SpecArt/top/?t=month",
+        "https://www.flickr.com/photos/tags",
+        "https://www.pinterest.com/search/pins/?q=illustration%20",
+        "https://dribbble.com/shots/popular",
+        "https://www.thisiscolossal.com/",
+        "https://www.juxtapoz.com/",
+        "https://www.booooooom.com/"
     ]
 
     allowed_domains = [
@@ -25,7 +31,13 @@ class GeneralSpider(CrawlSpider):
         'deviantart.com',
         'unsplash.com',
         'reddit.com',
-        'redd.it',  # Reddit's image domain
+        'redd.it',
+        "flickr.com",
+        "pinterest.com",
+        "dribbble.com",
+        "thisiscolossal.com",
+        "juxtapoz.com",
+        "booooooom.com"
     ]
 
     rules = (
@@ -37,6 +49,13 @@ class GeneralSpider(CrawlSpider):
                     r'/search/',
                     r'/settings/',
                     r'/account/',
+                    r'/login/',
+                    r'/signup/',
+                    r'/forgot/',
+                    r'/reset/',
+                    r'/verify/',
+                    r'/confirm/',
+                    r'/verify-email/',
                 )
             ),
             follow=True

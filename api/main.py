@@ -1,4 +1,5 @@
 import os
+import sys
 import psycopg2
 from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
@@ -6,6 +7,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from typing import List, Optional
 from pydantic import BaseModel
 from datetime import datetime
+
+# Add the project root to the Python path
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+# Import the config
+from config.config import DB_CONFIG, API_CONFIG
 
 app = FastAPI(title="Archillect API")
 
@@ -19,14 +26,14 @@ app.add_middleware(
 )
 
 # Serve static images
-app.mount("/images", StaticFiles(directory="/app/images"), name="images")
+app.mount("/images", StaticFiles(directory=API_CONFIG["images_dir"]), name="images")
 
 # Database connection parameters
-DB_HOST = os.environ.get("DB_HOST", "localhost")
-DB_PORT = os.environ.get("DB_PORT", "5432")
-DB_NAME = os.environ.get("DB_NAME", "archillect")
-DB_USER = os.environ.get("DB_USER", "postgres")
-DB_PASS = os.environ.get("DB_PASS", "password")
+DB_HOST = DB_CONFIG["host"]
+DB_PORT = DB_CONFIG["port"]
+DB_NAME = DB_CONFIG["dbname"]
+DB_USER = DB_CONFIG["user"]
+DB_PASS = DB_CONFIG["password"]
 
 class Image(BaseModel):
     id: int

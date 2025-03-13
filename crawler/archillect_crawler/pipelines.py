@@ -1,4 +1,5 @@
 import os
+import sys
 import hashlib
 import requests
 import psycopg2
@@ -9,6 +10,12 @@ from io import BytesIO
 import numpy as np
 from skimage.color import rgb2lab
 from torchvision import models
+
+# Add the project root to the Python path
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
+
+# Import the config
+from config.config import DB_CONFIG, CRAWLER_CONFIG
 
 class NIMA:
     """
@@ -54,17 +61,18 @@ class NIMAPipeline:
         self.model = None
         self.conn = None
         self.useDb = True
+        self.images_dir = CRAWLER_CONFIG["images_dir"]
 
     def open_spider(self, spider):
-        # Load DB connection info from environment
+        # Load DB connection info from config
         if self.useDb:
-            self.db_host = os.environ.get("DB_HOST", "localhost")
-            self.db_port = os.environ.get("DB_PORT", "5432")
-            self.db_name = os.environ.get("DB_NAME", "archillect")
-            self.db_user = os.environ.get("DB_USER", "postgres")
-            self.db_pass = os.environ.get("DB_PASS", "password")
+            self.db_host = DB_CONFIG["host"]
+            self.db_port = DB_CONFIG["port"]
+            self.db_name = DB_CONFIG["dbname"]
+            self.db_user = DB_CONFIG["user"]
+            self.db_pass = DB_CONFIG["password"]
 
-            # # Connect to DB
+            # Connect to DB
             self.conn = psycopg2.connect(
                 host=self.db_host,
                 port=self.db_port,
@@ -90,8 +98,11 @@ class NIMAPipeline:
             self.conn.commit()
             cur.close()
 
-        # # Initialize NIMA model
+        # Initialize NIMA model
         self.model = NIMA()
+        
+        # Ensure images directory exists
+        os.makedirs(self.images_dir, exist_ok=True)
 
     def close_spider(self, spider):
         if self.conn:
@@ -125,7 +136,7 @@ class NIMAPipeline:
             width, height = img.size
             
             # Skip very small images
-            if width < 256 or height < 256:
+            if width < 512 or height < 512:
                 spider.logger.info(f"Image too small: {width}x{height}")
                 return None
                 
@@ -144,19 +155,21 @@ class NIMAPipeline:
             score = self.model.predict(img)
             
             # Skip low-scoring images
-            if score < 5.0:
+            if score < 5.5:
                 spider.logger.info(f"Low aesthetic score: {score}")
                 return None
+            elif score > 7.0:
+                spider.logger.info(f"High aesthetic score: {score}, img: {image_url}")
                 
         except Exception as e:
             spider.logger.error(f"Error scoring image {image_url}: {e}")
             return None
 
-        # Save image locally
-        os.makedirs("images", exist_ok=True)
-        filename = f"images/{md5_hash}.jpg"
+        # Save image to the configured images directory
+        filename = f"{md5_hash}.jpg"
+        filepath = os.path.join(self.images_dir, filename)
         try:
-            with open(filename, "wb") as f:
+            with open(filepath, "wb") as f:
                 f.write(image_data)
         except Exception as e:
             spider.logger.error(f"Error saving image {filename}: {e}")
@@ -172,7 +185,7 @@ class NIMAPipeline:
             try:
                 with self.conn.cursor() as cur:
                     cur.execute(insert_query, (
-                        f"/images/{md5_hash}.jpg",
+                        f"/images/{filename}",
                         item["source_url"],
                         item["caption"],
                         score,
@@ -186,7 +199,7 @@ class NIMAPipeline:
         # Update item with additional info
         item["hash"] = md5_hash
         item["score"] = score
-        item["url"] = f"/images/{md5_hash}.jpg"
+        item["url"] = f"/images/{filename}"
         return item
 
     def is_duplicate(self, md5_hash):
