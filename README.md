@@ -1,4 +1,4 @@
-# Archillect Project
+# expl0rer
 
 A web application for crawling, storing, and displaying images with aesthetic scoring.
 

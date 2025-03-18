@@ -62,11 +62,11 @@ function App() {
 
   const handleShare = (image) => {
     const shareUrl = `${window.location.origin}${image.url}`;
-    const shareText = image.caption || "Check out this amazing image from Archillect";
+    const shareText = image.caption || "Check out this amazing image from expl0rer";
     
     if (navigator.share) {
       navigator.share({
-        title: "Archillect Image",
+        title: "expl0rer Image",
         text: shareText,
         url: shareUrl,
       });
@@ -86,7 +86,7 @@ function App() {
       <header className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
-            <h1 className="text-3xl font-bold text-gray-900">Archillect</h1>
+            <h1 className="text-3xl font-bold text-gray-900">expl0rer</h1>
             
             {stats && (
               <div className="text-sm text-gray-600">

@@ -14,7 +14,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 # Import the config
 from config.config import DB_CONFIG, API_CONFIG
 
-app = FastAPI(title="Archillect API")
+app = FastAPI(title="expl0rer API")
 
 # Allow cross-origin requests
 app.add_middleware(
@@ -55,7 +55,7 @@ def get_db_connection():
 
 @app.get("/")
 def read_root():
-    return {"message": "Welcome to Archillect API"}
+    return {"message": "Welcome to expl0rer API"}
 
 @app.get("/images", response_model=List[Image])
 def get_images(

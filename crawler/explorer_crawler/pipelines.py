@@ -158,7 +158,7 @@ class NIMAPipeline:
             if score < 5.5:
                 spider.logger.info(f"Low aesthetic score: {score}")
                 return None
-            elif score > 7.0:
+            elif score > 6.0:
                 spider.logger.info(f"High aesthetic score: {score}, img: {image_url}")
                 
         except Exception as e:

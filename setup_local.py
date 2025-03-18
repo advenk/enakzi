@@ -49,15 +49,15 @@ def setup_database():
             text=True
         )
         
-        if "archillect" in result.stdout:
-            print("✅ Database 'archillect' already exists.")
+        if "explorer" in result.stdout:
+            print("✅ Database 'explorer' already exists.")
         else:
             # Create database
             subprocess.run(
-                ["psql", "-h", "localhost", "-U", "postgres", "-c", "CREATE DATABASE archillect;"],
+                ["psql", "-h", "localhost", "-U", "postgres", "-c", "CREATE DATABASE explorer;"],
                 check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
             )
-            print("✅ Created database 'archillect'.")
+            print("✅ Created database 'explorer'.")
         
         return True
     except subprocess.SubprocessError as e:
@@ -142,7 +142,7 @@ def setup_web():
 
 def main():
     """Main setup function."""
-    print("=== Local Setup for Archillect Project ===\n")
+    print("=== Local Setup for explorer Project ===\n")
     
     # Check Python version
     python_version = sys.version_info
