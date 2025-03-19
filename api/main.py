@@ -8,15 +8,11 @@ from typing import List, Optional
 from pydantic import BaseModel
 from datetime import datetime
 
-# Add the project root to the Python path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-# Import the config
 from config.config import DB_CONFIG, API_CONFIG
 
 app = FastAPI(title="expl0rer API")
-
-# Allow cross-origin requests
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -24,11 +20,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# Serve static images
 app.mount("/images", StaticFiles(directory=API_CONFIG["images_dir"]), name="images")
 
-# Database connection parameters
 DB_HOST = DB_CONFIG["host"]
 DB_PORT = DB_CONFIG["port"]
 DB_NAME = DB_CONFIG["dbname"]
@@ -62,8 +55,8 @@ def get_images(
     limit: int = 20,
     offset: int = 0,
     min_score: Optional[float] = None,
-    sort_by: str = "score",  # Can be 'score', 'timestamp'
-    order: str = "desc"      # Can be 'asc', 'desc'
+    sort_by: str = "score",
+    order: str = "desc"    
 ):
     """
     Get a paginated list of images with optional filtering and sorting.
@@ -71,16 +64,13 @@ def get_images(
     conn = get_db_connection()
     cur = conn.cursor()
 
-    # Build the query
     query = "SELECT id, url, source_url, caption, timestamp, score, hash FROM images"
     params = []
 
-    # Add score filter if specified
     if min_score is not None:
         query += " WHERE score >= %s"
         params.append(min_score)
 
-    # Add sorting
     if sort_by not in ["score", "timestamp"]:
         sort_by = "score"
     if order not in ["asc", "desc"]:
@@ -88,7 +78,6 @@ def get_images(
     
     query += f" ORDER BY {sort_by} {order}"
 
-    # Add pagination
     query += " LIMIT %s OFFSET %s"
     params.extend([limit, offset])
 
@@ -117,9 +106,6 @@ def get_images(
 
 @app.get("/images/{image_id}", response_model=Image)
 def get_image(image_id: int):
-    """
-    Get a single image by its ID.
-    """
     conn = get_db_connection()
     cur = conn.cursor()
 
@@ -158,16 +144,12 @@ def get_stats():
 
     try:
         stats = {}
-        
-        # Total images
         cur.execute("SELECT COUNT(*) FROM images")
         stats["total_images"] = cur.fetchone()[0]
         
-        # Average score
         cur.execute("SELECT AVG(score) FROM images")
         stats["average_score"] = round(cur.fetchone()[0] or 0, 2)
         
-        # Score distribution
         cur.execute("""
             SELECT 
                 COUNT(*) FILTER (WHERE score >= 9) as excellent,

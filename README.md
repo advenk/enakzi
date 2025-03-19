@@ -1,11 +1,11 @@
 # expl0rer
 
-A web application for crawling, storing, and displaying images with aesthetic scoring.
+A web application for crawling, storing, and displaying images 
 
 ## Components
 
 - **API**: FastAPI backend for serving image data
-- **Crawler**: Scrapy-based web crawler with NIMA aesthetic scoring
+- **Crawler**: web crawler with NIMA scoring for aesthetics 
 - **Web**: React frontend for displaying images
 - **Database**: PostgreSQL database for storing image metadata
 
@@ -18,14 +18,7 @@ A web application for crawling, storing, and displaying images with aesthetic sc
 - Node.js and npm
 
 ### Setup Instructions
-
-1. Clone the repository:
-   ```
-   git clone <repository-url>
-   cd <repository-directory>
-   ```
-
-2. Run the setup script:
+Clone the repository and run the setup script:
    ```
    python setup_local.py
    ```
@@ -61,7 +54,7 @@ cd web
 npm start
 ```
 
-The web application will be available at http://localhost:3000
+The app will be available at http://localhost:3000
 
 ## Configuration
 
@@ -89,7 +82,3 @@ All configuration is centralized in the `config/config.py` file. You can modify 
 
 - Make sure the API is running before starting the web application
 - Check that the API URL is correctly set in the `.env` file
-
-## License
-
-[MIT License](LICENSE) 

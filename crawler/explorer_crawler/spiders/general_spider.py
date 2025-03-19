@@ -17,9 +17,9 @@ class GeneralSpider(CrawlSpider):
         # "https://www.reddit.com/r/SpecArt/top/?t=month",
         # "https://www.flickr.com/photos/tags",
         # "https://dribbble.com/shots/popular",
-        # "https://www.thisiscolossal.com/"
+        # "https://www.thisiscolossal.com/",
         # "https://www.juxtapoz.com/",
-        "https://archillect.com/",
+        "https://archillect.com/123",
         # "https://www.booooooom.com/"
         # "https://www.pinterest.com/ideas/art/961238559656/",
         # "https://www.pinterest.com/ideas/design/902065567321/"
