@@ -1,30 +1,42 @@
+#!/usr/bin/env python3
 import os
 import sys
 import subprocess
 import platform
+
+# Add the project root to the Python path
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
+
+# Import the config
 from config.config import API_CONFIG, DB_CONFIG
 
 def main():
+    """Run the API locally."""
     print("Starting API server locally...")
+    
+    # Set environment variables
     env = os.environ.copy()
     env["DB_HOST"] = DB_CONFIG["host"]
     env["DB_PORT"] = DB_CONFIG["port"]
     env["DB_NAME"] = DB_CONFIG["dbname"]
     env["DB_USER"] = DB_CONFIG["user"]
     env["DB_PASS"] = DB_CONFIG["password"]
+    
+    # Determine the Python executable in the virtual environment
     if platform.system() == "Windows":
         python_exe = os.path.join("venv", "Scripts", "python")
         uvicorn_exe = os.path.join("venv", "Scripts", "uvicorn")
     else:
         python_exe = os.path.join("venv", "bin", "python")
         uvicorn_exe = os.path.join("venv", "bin", "uvicorn")
-
+    
+    # Check if we're in the api directory
     if not os.path.exists("main.py"):
         print("Error: This script should be run from the api directory.")
         print("Please run: cd api && ../run_api.py")
         sys.exit(1)
-
+    
+    # Run the API using uvicorn
     try:
         cmd = [uvicorn_exe, "main:app", "--host", API_CONFIG["host"], "--port", API_CONFIG["port"], "--reload"]
         subprocess.run(cmd, env=env)

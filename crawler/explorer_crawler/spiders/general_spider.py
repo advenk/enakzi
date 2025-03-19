@@ -9,7 +9,7 @@ class GeneralSpider(CrawlSpider):
 
     start_urls = [
         # "https://www.tumblr.com/communities/browse/art",
-        # "https://www.behance.net/galleries",
+        "https://www.behance.net/galleries",
         # "https://www.artstation.com/?sort_by=community&dimension=all",
         # "https://unsplash.com/",
         # "https://www.reddit.com/r/Art/top/?t=month",
@@ -19,7 +19,7 @@ class GeneralSpider(CrawlSpider):
         # "https://dribbble.com/shots/popular",
         # "https://www.thisiscolossal.com/",
         # "https://www.juxtapoz.com/",
-        "https://archillect.com/123",
+        # "https://archillect.com/81889",
         # "https://www.booooooom.com/"
         # "https://www.pinterest.com/ideas/art/961238559656/",
         # "https://www.pinterest.com/ideas/design/902065567321/"
