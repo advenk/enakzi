@@ -1,4 +1,5 @@
 import os
+import sys
 import psycopg2
 from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
@@ -7,9 +8,11 @@ from typing import List, Optional
 from pydantic import BaseModel
 from datetime import datetime
 
-app = FastAPI(title="Archillect API")
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-# Allow cross-origin requests
+from config.config import DB_CONFIG, API_CONFIG
+
+app = FastAPI(title="expl0rer API")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -17,16 +20,13 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.mount("/images", StaticFiles(directory=API_CONFIG["images_dir"]), name="images")
 
-# Serve static images
-app.mount("/images", StaticFiles(directory="/app/images"), name="images")
-
-# Database connection parameters
-DB_HOST = os.environ.get("DB_HOST", "localhost")
-DB_PORT = os.environ.get("DB_PORT", "5432")
-DB_NAME = os.environ.get("DB_NAME", "archillect")
-DB_USER = os.environ.get("DB_USER", "postgres")
-DB_PASS = os.environ.get("DB_PASS", "password")
+DB_HOST = DB_CONFIG["host"]
+DB_PORT = DB_CONFIG["port"]
+DB_NAME = DB_CONFIG["dbname"]
+DB_USER = DB_CONFIG["user"]
+DB_PASS = DB_CONFIG["password"]
 
 class Image(BaseModel):
     id: int
@@ -48,15 +48,15 @@ def get_db_connection():
 
 @app.get("/")
 def read_root():
-    return {"message": "Welcome to Archillect API"}
+    return {"message": "Welcome to expl0rer API"}
 
 @app.get("/images", response_model=List[Image])
 def get_images(
     limit: int = 20,
     offset: int = 0,
     min_score: Optional[float] = None,
-    sort_by: str = "score",  # Can be 'score', 'timestamp'
-    order: str = "desc"      # Can be 'asc', 'desc'
+    sort_by: str = "score",
+    order: str = "desc"    
 ):
     """
     Get a paginated list of images with optional filtering and sorting.
@@ -64,16 +64,13 @@ def get_images(
     conn = get_db_connection()
     cur = conn.cursor()
 
-    # Build the query
     query = "SELECT id, url, source_url, caption, timestamp, score, hash FROM images"
     params = []
 
-    # Add score filter if specified
     if min_score is not None:
         query += " WHERE score >= %s"
         params.append(min_score)
 
-    # Add sorting
     if sort_by not in ["score", "timestamp"]:
         sort_by = "score"
     if order not in ["asc", "desc"]:
@@ -81,7 +78,6 @@ def get_images(
     
     query += f" ORDER BY {sort_by} {order}"
 
-    # Add pagination
     query += " LIMIT %s OFFSET %s"
     params.extend([limit, offset])
 
@@ -110,9 +106,6 @@ def get_images(
 
 @app.get("/images/{image_id}", response_model=Image)
 def get_image(image_id: int):
-    """
-    Get a single image by its ID.
-    """
     conn = get_db_connection()
     cur = conn.cursor()
 
@@ -151,16 +144,12 @@ def get_stats():
 
     try:
         stats = {}
-        
-        # Total images
         cur.execute("SELECT COUNT(*) FROM images")
         stats["total_images"] = cur.fetchone()[0]
         
-        # Average score
         cur.execute("SELECT AVG(score) FROM images")
         stats["average_score"] = round(cur.fetchone()[0] or 0, 2)
         
-        # Score distribution
         cur.execute("""
             SELECT 
                 COUNT(*) FILTER (WHERE score >= 9) as excellent,

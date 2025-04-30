@@ -1,6 +1,6 @@
 import scrapy
 
-class ArchillectItem(scrapy.Item):
+class ExplorerItem(scrapy.Item):
     image_url = scrapy.Field()
     source_url = scrapy.Field()
     caption = scrapy.Field()

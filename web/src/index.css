@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Custom styles */
 .masonry-grid {
   display: flex;
   margin-left: -16px;
@@ -15,29 +14,42 @@
 }
 
 .image-card {
-  @apply bg-white rounded-lg shadow-md overflow-hidden mb-4 transition-transform duration-200 hover:shadow-lg hover:-translate-y-1;
+  @apply bg-white rounded-xl shadow-sm overflow-hidden mb-4 transition-all duration-300 ease-in-out;
+  position: relative;
 }
 
 .image-card img {
   @apply w-full h-auto object-cover;
 }
 
-.image-info {
-  @apply p-4;
+.image-card:hover {
+  @apply shadow-md;
+  transform: translateY(-3px);
 }
 
-.score-badge {
-  @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.score-excellent {
-  @apply bg-green-100 text-green-800;
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
 }
 
-.score-good {
-  @apply bg-blue-100 text-blue-800;
+::-webkit-scrollbar {
+  width: 8px;
 }
 
-.score-average {
-  @apply bg-yellow-100 text-yellow-800;
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c4d1fb;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #9ab3f8;
 } 
